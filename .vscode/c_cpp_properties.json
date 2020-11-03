@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "/Users/fadilmapro/Documents/Arduino/libraries/DHT_sensor_library",
+                "/Users/fadilmapro/Documents/Arduino/libraries/ESPIno32CAM-master",
+                "/Users/fadilmapro/Library/Arduino15/packages/esp32/tools/**",
+                "/Users/fadilmapro/Library/Arduino15/packages/esp32/hardware/esp32/1.0.4/**"
+            ],
+            "forcedInclude": [],
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ],
+            "intelliSenseMode": "clang-x64",
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
