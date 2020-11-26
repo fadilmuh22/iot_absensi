@@ -1,29 +1,29 @@
+#include <Arduino_JSON.h>
+#include <JSON.h>
+#include <JSONVar.h>
+
 #include <WiFi.h>
 #include <HTTPClient.h>
-
-#include "DHT.h"
-#define DHTPIN 13
-#define DHTTYPE DHT11
+#include <Arduino_JSON.h>
 
 #include "ESPino32CAM.h"
 #include "ESPino32CAM_QRCode.h"
 
 ESPino32CAM cam;
 ESPino32QRCode qr;
-DHT dht(DHTPIN, DHTTYPE);
 WiFiClient client;
 
-const char *ssid = ".fadilp";
-const char *password = "//akuFadil22;";
+char *ssid = "Henshin";
+const char *password = "kr453145";
 
-String serverName = "http://192.168.43.252:8000/test";
+String serverName = "http://localhost:8000/api/v1/absen";
 
 String capture_qr_scan()
 {
   camera_fb_t *fb = cam.capture();
   dl_matrix3du_t *image_rgb;
 
-  String qrData = "no_qr_data";
+  String qrData = "";
 
   if (!fb)
   {
@@ -40,7 +40,7 @@ String capture_qr_scan()
       if (res.status)
       {
 
-        Serial.println("Camera capture david");
+        Serial.println("Camera capture success");
 
         cam.printDebug("");
         cam.printfDebug("Version: %d", res.version);
@@ -50,38 +50,6 @@ String capture_qr_scan()
         cam.printfDebug("Length: %d", res.length);
         cam.printDebug("Payload: " + res.payload);
         qrData = res.payload;
-
-        // Wait a few seconds between measurements.
-        // delay(500);
-        // Reading temperature or humidity takes about 250 milliseconds!
-        // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-        // float h = dht.readHumidity();
-        // // Read temperature as Celsius (the default)
-        // float t = dht.readTemperature();
-        // // Read temperature as Fahrenheit (isFahrenheit = true)
-        // float f = dht.readTemperature(true);
-        // // Check if any reads failed and exit early (to try again).
-        // if (isnan(h) || isnan(t) || isnan(f))
-        // {
-        //   Serial.println(F("Failed to read from DHT sensor!"));
-        //   return;
-        // }
-        // // Compute heat index in Fahrenheit (the default)
-        // float hif = dht.computeHeatIndex(f, h);
-        // // Compute heat index in Celsius (isFahreheit = false)
-        // float hic = dht.computeHeatIndex(t, h, false);
-
-        // Serial.print(F("Humidity: "));
-        // Serial.print(h);
-        // Serial.print(F("%  Temperature: "));
-        // Serial.print(t);
-        // Serial.print(F("°C "));
-        // Serial.print(f);
-        // Serial.print(F("°F  Heat index: "));
-        // Serial.print(hic);
-        // Serial.print(F("°C "));
-        // Serial.print(hif);
-        // Serial.println(F("°F"));
       }
       else
       {
@@ -106,8 +74,10 @@ void send_qr_data_to_server(String qrData)
     // Your Domain name with URL path or IP address with path
     http.begin(serverName.c_str());
 
-    // Send HTTP GET request
-    int httpResponseCode = http.GET();
+    http.addHeader("Content-Type", "application/json");
+
+    JSONVar myObject = JSON.parse(qrData);
+    int httpResponseCode = http.POST(qrData);
 
     if (httpResponseCode > 0)
     {
@@ -133,8 +103,6 @@ void send_qr_data_to_server(String qrData)
 void setup()
 {
   Serial.begin(115200);
-
-  dht.begin();
 
   if (cam.init() != ESP_OK)
   {
@@ -169,7 +137,7 @@ void loop()
   }
   else
   {
-    // send_qr_data_to_server(qrData);
+    send_qr_data_to_server(qrData);
   }
 
   delay(3000);
